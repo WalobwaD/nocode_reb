@@ -2,8 +2,9 @@ import { Comment, CommentWithChildren } from "@/types/Comments";
 import { formatTimeAgo } from "@/utils/formatTime";
 import { FontAwesome } from "@expo/vector-icons";
 import { router, useLocalSearchParams } from "expo-router";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import {
+  ActivityIndicator,
   FlatList,
   Image,
   SafeAreaView,
@@ -23,63 +24,71 @@ const extractImageUrlFromHtml = (html: string): string | null => {
 };
 
 const CommentsScreen = () => {
-  const { postId, title, user, content, avatar, created_at } =
-    useLocalSearchParams();
-  const created_at_num = parseInt(created_at as string);
+  const { postId, title, user, content, avatar, created_at } = useLocalSearchParams();
+  const created_at_num = Number(created_at);
   const [comments, setComments] = useState<CommentWithChildren[]>([]);
   const [refreshFlag, setRefreshFlag] = useState(0);
+  const [loading, setLoading] = useState(true);
 
   const imageUrl = extractImageUrlFromHtml(content as string);
 
   useEffect(() => {
-    fetchComments(postId as string, 1).then((fetched: any) => {
-      const tree = buildCommentTree(fetched);
-      setComments(tree);
-    });
+    let isMounted = true;
+    setLoading(true);
+    fetchComments(postId as string, 1)
+      .then((fetched: any) => {
+        if (isMounted) {
+          const tree = buildCommentTree(fetched);
+          setComments(tree);
+        }
+      })
+      .catch(() => {
+        if (isMounted) setComments([]);
+      })
+      .finally(() => {
+        if (isMounted) setLoading(false);
+      });
+    return () => {
+      isMounted = false;
+    };
   }, [postId, refreshFlag]);
 
-  const handleCommentAdded = () => {
-    setRefreshFlag((prev) => prev + 1);
-  };
+  const handleCommentAdded = () => setRefreshFlag((prev) => prev + 1);
 
-  const onReplyPress = (
-    parentId: string,
-    level: number,
-    comment: Comment,
-    navigateToReplies = false
-  ) => {
-    if (level >= 4 && navigateToReplies) {
-      router.push({
-        pathname: "/Replies/NestedReplies",
-        params: {
-          postId,
-          level,
-          parentId,
-          comment: JSON.stringify(comment),
-          original: JSON.stringify({
+  const onReplyPress = useCallback(
+    (
+      parentId: string,
+      level: number,
+      comment: Comment,
+      navigateToReplies = false
+    ) => {
+      if (level >= 4 && navigateToReplies) {
+        router.push({
+          pathname: "/Replies/NestedReplies",
+          params: {
             postId,
-            title,
-            user,
-            content,
-            avatar,
-          }),
-        },
-      });
-    }
-  };
+            level,
+            parentId,
+            comment: JSON.stringify(comment),
+            original: JSON.stringify({ postId, title, user, content, avatar }),
+          },
+        });
+      }
+    },
+    [postId, title, user, content, avatar]
+  );
 
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.postCard}>
         <View style={styles.voteSection}>
-          <TouchableOpacity>
+          <TouchableOpacity accessibilityLabel="Upvote post">
             <FontAwesome name="arrow-up" size={20} color="#6200BB" />
           </TouchableOpacity>
-          <TouchableOpacity>
+          <TouchableOpacity accessibilityLabel="Downvote post">
             <FontAwesome name="arrow-down" size={20} color="#999" />
           </TouchableOpacity>
         </View>
-
         <View style={styles.postContent}>
           <View style={styles.headerRow}>
             <Image
@@ -92,6 +101,7 @@ const CommentsScreen = () => {
                     : "https://picsum.photos/seed/picsum/200/300",
               }}
               style={styles.avatar}
+              accessibilityLabel="User avatar"
             />
             <View>
               <Text style={styles.username}>u/{user}</Text>
@@ -100,38 +110,42 @@ const CommentsScreen = () => {
               </Text>
             </View>
           </View>
-
           <Text style={styles.title}>{title}</Text>
           <Text style={styles.bodyText}>
             {(content as string)?.replace(/<[^>]+>/g, "")}
           </Text>
-
           {imageUrl && (
             <Image
               source={{ uri: imageUrl }}
               style={styles.postImage}
               resizeMode="contain"
+              accessibilityLabel="Post image"
             />
           )}
         </View>
       </View>
-
       <CommentForm postId={postId} onCommentAdded={handleCommentAdded} />
-
-      <FlatList
-        data={comments}
-        keyExtractor={(item) => item.id}
-        renderItem={({ item }) => (
-          <CommentItem
-            comment={item}
-            level={1}
-            onReplyPress={onReplyPress}
-            postId={postId}
-            onReplyAdded={handleCommentAdded}
-          />
-        )}
-        contentContainerStyle={styles.commentList}
-      />
+      {loading ? (
+        <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+          <ActivityIndicator size="large" color="#6200BB" />
+        </View>
+      ) : (
+        <FlatList
+          data={comments}
+          keyExtractor={(item) => item.id}
+          renderItem={({ item }) => (
+            <CommentItem
+              comment={item}
+              level={1}
+              onReplyPress={onReplyPress}
+              postId={postId}
+              onReplyAdded={handleCommentAdded}
+            />
+          )}
+          contentContainerStyle={styles.commentList}
+          ListEmptyComponent={<Text style={{ textAlign: "center", marginTop: 20, color: '#888' }}>No comments yet.</Text>}
+        />
+      )}
     </SafeAreaView>
   );
 };

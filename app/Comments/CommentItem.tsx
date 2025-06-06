@@ -44,14 +44,50 @@ const CommentItem: React.FC<Props> = ({
   const [replyText, setReplyText] = useState("");
   const [loading, setLoading] = useState(false);
 
-  const handleViewReplies = () => {
-    if (comment.depth_level === 4 || comment.depth_level === 8) {
-      onReplyPress(comment.id, comment.depth_level, comment, true);
-    } else {
-      setShowReplies(!showReplies);
+  // Memoize avatar URI for performance
+  const avatarUri = React.useMemo(() => {
+    return comment.user_details.avatar || "https://picsum.photos/seed/picsum/200/300";
+  }, [comment.user_details.avatar]);
+
+  // Memoize formatted time
+  const formattedTime = React.useMemo(() => {
+    return formatTimeAgo(new Date(comment.created_at).getTime());
+  }, [comment.created_at]);
+
+  // Prevent empty reply and double submit
+  const handleReply = async () => {
+    if (!replyText.trim() || loading) {
+      Alert.alert("Comment cannot be empty.");
+      return;
+    }
+    setLoading(true);
+    try {
+      const normalizedPostId = Array.isArray(postId) ? postId[0] : postId;
+      const normalizedCommentId = Array.isArray(comment.id)
+        ? comment.id[0]
+        : comment.id;
+      const response = await createComment(
+        normalizedPostId,
+        replyText.trim(),
+        normalizedCommentId
+      );
+      if (response?.id) {
+        Alert.alert("Comment added!");
+        setReplyText("");
+        onReplyAdded?.();
+        setIsReplying(false);
+      } else {
+        Alert.alert("Failed to add comment.");
+      }
+    } catch (error) {
+      console.error("Error while replying:", error);
+      Alert.alert("Something went wrong. Please try again.");
+    } finally {
+      setLoading(false);
     }
   };
 
+  // Confirm before deleting
   const handleDelete = () => {
     Alert.alert(
       "Delete Comment",
@@ -75,41 +111,30 @@ const CommentItem: React.FC<Props> = ({
     );
   };
 
-  const handleReply = async () => {
-    if (!replyText.trim()) {
-      Alert.alert("Comment cannot be empty.");
-      return;
-    }
-
-    setLoading(true);
-    try {
-      const normalizedPostId = Array.isArray(postId) ? postId[0] : postId;
-      const normalizedCommentId = Array.isArray(comment.id)
-        ? comment.id[0]
-        : comment.id;
-
-      const response = await createComment(
-        normalizedPostId,
-        replyText.trim(),
-        normalizedCommentId
-      );
-      console.log(response);
-
-      if (response?.id) {
-        Alert.alert("Comment added!");
-        setReplyText("");
-        onReplyAdded?.();
-        setIsReplying(false);
-      } else {
-        Alert.alert("Failed to add comment.");
-      }
-    } catch (error) {
-      console.error("Error while replying:", error);
-      Alert.alert("Something went wrong. Please try again.");
-    } finally {
-      setLoading(false);
+  // Handle showing replies or navigating to nested replies
+  const handleViewReplies = () => {
+    if (comment.depth_level === 4 || comment.depth_level === 8) {
+      onReplyPress(comment.id, comment.depth_level, comment, true);
+    } else {
+      setShowReplies((prev) => !prev);
     }
   };
+
+  // Render children recursively only if not deleted
+  const renderChildren = () =>
+    showReplies &&
+    comment.children.map((child) => (
+      <CommentItem
+        key={child.id}
+        comment={child}
+        level={level + 1}
+        onReplyPress={onReplyPress}
+        currentUserId={currentUserId}
+        onCommentDeleted={onCommentDeleted}
+        postId={postId}
+        onReplyAdded={onReplyAdded}
+      />
+    ));
 
   return (
     <View style={styles.wrapper}>
@@ -120,11 +145,10 @@ const CommentItem: React.FC<Props> = ({
             style={[styles.verticalLine, { marginLeft: (level - 1) * 12 + 10 }]}
           />
         )}
-
-        <View style={[styles.commentBlock, { marginLeft: level * 12 }]}>
+        <View style={[styles.commentBlock, { marginLeft: level * 12 }]}>  
           <View style={styles.commentContainer}>
             <Image
-              source={{ uri: comment.user_details.avatar }}
+              source={{ uri: avatarUri }}
               style={styles.avatar}
             />
             <View style={styles.content}>
@@ -135,40 +159,33 @@ const CommentItem: React.FC<Props> = ({
                 <Text style={styles.username}>
                   @{comment.user_details.user_handle}
                 </Text>
-                <Text style={styles.timestamp}>
-                  {formatTimeAgo(new Date(comment.created_at).getTime())}
-                </Text>
+                <Text style={styles.timestamp}>{formattedTime}</Text>
               </View>
               <Text style={styles.body}>
                 {isDeleted
                   ? "(This comment was deleted)"
                   : comment.content.replace(/<[^>]+>/g, "")}
               </Text>
-
               {!isDeleted && (
                 <View style={{ flexDirection: "row", gap: 12 }}>
                   <TouchableOpacity
-                    onPress={() => {
-                      setIsReplying((prev) => !prev);
-                    }}
+                    onPress={() => setIsReplying((prev) => !prev)}
                   >
                     <Text style={styles.reply}>Reply</Text>
                   </TouchableOpacity>
-
-                  {"codersupreme" === comment.user_details.user_handle && (
+                  {currentUserId === comment.user_details.user_handle && (
                     <TouchableOpacity onPress={handleDelete}>
                       <Text style={styles.delete}>Delete</Text>
-                      <Text style={styles.delete}></Text>
                     </TouchableOpacity>
                   )}
                 </View>
               )}
-
               {comment.child_count > 0 && (
                 <TouchableOpacity onPress={handleViewReplies}>
                   <Text style={styles.viewReplies}>
-                    {showReplies ? "-" : "+"} View {comment.child_count} repl
-                    {comment.child_count > 1 ? "ies" : "y"}
+                    {showReplies ? "-" : "+"} {comment.depth_level === 4 || comment.depth_level === 8
+                      ? "View more comments"
+                      : `View ${comment.child_count} repl${comment.child_count > 1 ? "ies" : "y"}`}
                   </Text>
                 </TouchableOpacity>
               )}
@@ -176,23 +193,10 @@ const CommentItem: React.FC<Props> = ({
           </View>
         </View>
       </View>
-
       {/* Render Children */}
-      {showReplies &&
-        comment.children.map((child) => (
-          <CommentItem
-            key={child.id}
-            comment={child}
-            level={level + 1}
-            onReplyPress={onReplyPress}
-            currentUserId={currentUserId}
-            onCommentDeleted={onCommentDeleted}
-            postId={postId}
-            onReplyAdded={onReplyAdded}
-          />
-        ))}
-
-      {isReplying && (
+      {renderChildren()}
+      {/* Reply input */}
+      {isReplying && !isDeleted && (
         <View
           style={{
             flexDirection: "row",
@@ -216,8 +220,12 @@ const CommentItem: React.FC<Props> = ({
               paddingVertical: 8,
               paddingRight: 32,
             }}
+            editable={!loading}
+            returnKeyType="send"
+            onSubmitEditing={handleReply}
+            blurOnSubmit={true}
           />
-          <TouchableOpacity onPress={handleReply} style={{ paddingLeft: 8 }}>
+          <TouchableOpacity onPress={handleReply} style={{ paddingLeft: 8 }} disabled={loading}>
             {loading ? (
               <ActivityIndicator size="small" color="#6200BB" />
             ) : (
