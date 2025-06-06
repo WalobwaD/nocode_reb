@@ -12,6 +12,7 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
+import { Ionicons } from "@expo/vector-icons";
 
 const PER_PAGE = 10;
 
@@ -22,60 +23,88 @@ const Communities = () => {
   const [refreshing, setRefreshing] = useState(false);
   const [hasMore, setHasMore] = useState(true);
 
-  const loadCommunities = async (pageToLoad = 1, isRefreshing = false) => {
-    if (loading) return;
+  const loadCommunities = useCallback(
+    async (pageToLoad = 1, isRefreshing = false) => {
+      if (loading) return;
 
-    setLoading(true);
-    try {
-      const newItems = await fetchCommunities(pageToLoad, PER_PAGE);
-      if (isRefreshing) {
-        setCommunities(newItems);
-      } else {
-        setCommunities((prev) => [...prev, ...newItems]);
+      setLoading(true);
+      try {
+        const newItems = await fetchCommunities(pageToLoad, PER_PAGE);
+        if (isRefreshing) {
+          setCommunities(newItems);
+        } else {
+          setCommunities((prev) => [...prev, ...newItems]);
+        }
+
+        setHasMore(newItems.length === PER_PAGE);
+        setPage(pageToLoad);
+      } catch {
+        setCommunities([]);
+      } finally {
+        setLoading(false);
+        if (isRefreshing) setRefreshing(false);
       }
-
-      setHasMore(newItems.length === PER_PAGE);
-      setPage(pageToLoad);
-    } catch (error) {
-      console.error("Error loading communities:", error);
-    } finally {
-      setLoading(false);
-      if (isRefreshing) setRefreshing(false);
-    }
-  };
+    },
+    [loading]
+  );
 
   useFocusEffect(
     useCallback(() => {
-      loadCommunities(1, true); // Refresh when the screen is focused
-    }, [])
+      loadCommunities(1, true);
+    }, [loadCommunities])
   );
 
-  const handleRemoveFromList = (id: string) => {
-    setCommunities((prev) => prev.filter((p) => p.id !== id));
-  };
+  const handleRemoveFromList = useCallback(
+    (id: string) => {
+      setCommunities((prev) => prev.filter((p) => p.id !== id));
+    },
+    []
+  );
 
-  const handleLoadMore = () => {
+  const handleLoadMore = useCallback(() => {
     if (hasMore && !loading) {
       loadCommunities(page + 1);
     }
-  };
+  }, [hasMore, loading, loadCommunities, page]);
 
-  const handleRefresh = () => {
+  const handleRefresh = useCallback(() => {
     setRefreshing(true);
     loadCommunities(1, true);
-  };
+  }, [loadCommunities]);
 
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.headerContainer}>
-        <TouchableOpacity
-          style={styles.createPostButton}
-          onPress={() => router.push("/CreatePost")}
+        <View
+          style={{
+            flexDirection: "row",
+            alignItems: "center",
+            justifyContent: "space-between",
+            width: "100%",
+          }}
         >
-          <Text style={styles.createPostText}>+ Create Post</Text>
-        </TouchableOpacity>
+          <TouchableOpacity
+            style={{
+              padding: 8,
+              borderRadius: 20,
+              backgroundColor: "transparent",
+              justifyContent: "center",
+              alignItems: "center",
+            }}
+            onPress={() => router.back()}
+            accessibilityLabel="Back"
+          >
+            <Ionicons name="arrow-back" size={24} color="#6200BB" />
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={styles.createPostButton}
+            onPress={() => router.push("/CreatePost")}
+            accessibilityLabel="Create a new post"
+          >
+            <Text style={styles.createPostText}>+ Create Post</Text>
+          </TouchableOpacity>
+        </View>
       </View>
-
       <FlatList
         data={communities}
         keyExtractor={(item) => item.id}
@@ -93,6 +122,19 @@ const Communities = () => {
               <ActivityIndicator size="small" color="#6200BB" />
             </View>
           ) : null
+        }
+        ListEmptyComponent={
+          !loading && (
+            <Text
+              style={{
+                textAlign: "center",
+                marginTop: 24,
+                color: "#888",
+              }}
+            >
+              No communities found.
+            </Text>
+          )
         }
       />
     </SafeAreaView>

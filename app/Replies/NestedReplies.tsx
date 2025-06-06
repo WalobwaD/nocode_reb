@@ -1,8 +1,8 @@
 import OriginalPost from "@/components/OriginalPost";
 import { Comment, CommentWithChildren } from "@/types/Comments";
 import { router, useLocalSearchParams } from "expo-router";
-import { useEffect, useState } from "react";
-import { FlatList, SafeAreaView, StyleSheet } from "react-native";
+import { useEffect, useState, useCallback } from "react";
+import { FlatList, SafeAreaView, StyleSheet, ActivityIndicator, View } from "react-native";
 import { fetchComments } from "../../services/commentService";
 import { buildCommentTree } from "../../utils/commentTree";
 import CommentItem from "../Comments/CommentItem";
@@ -27,22 +27,27 @@ const NestedReplies = () => {
   const levelNumber = parseInt(level as string, 10);
   const [comments, setComments] = useState<CommentWithChildren[]>([]);
   const [refreshFlag, setRefreshFlag] = useState(0);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetchComments(parentId as string, levelNumber + 1).then(
-      (fetched: Comment[]) => {
-        const tree = buildCommentTree(fetched);
-        setComments(tree);
-      }
-    );
-  }, [postId, refreshFlag]);
+    let isMounted = true;
+    setLoading(true);
+    fetchComments(parentId as string, levelNumber + 1)
+      .then((fetched: Comment[]) => {
+        if (isMounted) {
+          const tree = buildCommentTree(fetched);
+          setComments(tree);
+        }
+      })
+      .finally(() => {
+        if (isMounted) setLoading(false);
+      });
+    return () => {
+      isMounted = false;
+    };
+  }, [parentId, levelNumber, refreshFlag]);
 
-  const onReplyPress = (
-    parentId: string,
-    level: number,
-    comment: Comment,
-    navigateToReplies = false
-  ) => {
+  const onReplyPress = useCallback((parentId: string, level: number, comment: Comment, navigateToReplies = false) => {
     if (level >= 8 && navigateToReplies) {
       router.push({
         pathname: "/Replies/DeeplyNested",
@@ -51,40 +56,40 @@ const NestedReplies = () => {
           level: level.toString(),
           parentId,
           initialComment: JSON.stringify(comment),
-          original: original,
+          original,
         },
       });
-    } else {
-      // Show inline reply UI
-      console.log("Replying to:", parentId);
     }
-  };
+  }, [postId, original]);
 
-  const handleCommentAdded = () => {
-    setRefreshFlag((prev) => prev + 1); // force reload
-  };
+  const handleCommentAdded = useCallback(() => {
+    setRefreshFlag((prev) => prev + 1);
+  }, []);
 
   return (
     <SafeAreaView style={styles.container}>
-      <OriginalPost
-        originalPost={originalPost}
-        retrievedComment={retrievedComment}
-      />
-
-      <FlatList
-        data={comments}
-        keyExtractor={(item) => item.id}
-        renderItem={({ item }) => (
-          <CommentItem
-            comment={item}
-            level={1}
-            onReplyPress={onReplyPress}
-            postId={postId}
-            onReplyAdded={handleCommentAdded}
-          />
-        )}
-        contentContainerStyle={{ paddingBottom: 100 }}
-      />
+      <OriginalPost originalPost={originalPost} retrievedComment={retrievedComment} />
+      {loading ? (
+        <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+          <ActivityIndicator size="large" color="#6200BB" />
+        </View>
+      ) : (
+        <FlatList
+          data={comments}
+          keyExtractor={(item) => item.id}
+          renderItem={({ item }) => (
+            <CommentItem
+              comment={item}
+              level={1}
+              onReplyPress={onReplyPress}
+              postId={postId}
+              onReplyAdded={handleCommentAdded}
+            />
+          )}
+          contentContainerStyle={{ paddingBottom: 100 }}
+          ListEmptyComponent={<View style={{ alignItems: "center", marginTop: 24 }}><ActivityIndicator size="small" color="#6200BB" /></View>}
+        />
+      )}
     </SafeAreaView>
   );
 };

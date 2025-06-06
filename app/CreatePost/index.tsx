@@ -1,5 +1,5 @@
 import { router } from "expo-router";
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import {
   ActivityIndicator,
   Alert,
@@ -16,46 +16,42 @@ import { createPost } from "../../services/postService";
 const ACCENT = "#6200BB";
 
 const CreatePost = () => {
-  const [communityId, setCommunityId] = useState<string>("");
-  const [title, setTitle] = useState<string>("");
-  const [content, setContent] = useState<string>("");
+  const [title, setTitle] = useState("");
+  const [content, setContent] = useState("");
   const [loading, setLoading] = useState(false);
 
-  const handleSubmit = async () => {
-    if ( !title) {
-      Alert.alert("Error", "Community ID and title are required.");
+  const handleSubmit = useCallback(async () => {
+    if (!title.trim()) {
+      Alert.alert("Error", "Title is required.");
       return;
     }
-
     setLoading(true);
     try {
-      const response = await createPost(title, content);
+      const response = await createPost(title.trim(), content.trim());
       if (response === 200) {
         Alert.alert("Success", "Post created successfully!");
         router.back();
       } else {
         Alert.alert("Error", "Failed to create post.");
       }
-    } catch (err) {
-      console.error(err);
+    } catch {
       Alert.alert("Error", "An unexpected error occurred.");
     } finally {
       setLoading(false);
     }
-  };
+  }, [title, content]);
 
   return (
     <SafeAreaView style={styles.container}>
-      <ScrollView contentContainerStyle={styles.scroll}>
+      <ScrollView contentContainerStyle={styles.scroll} keyboardShouldPersistTaps="handled">
         <Text style={styles.heading}>Create a New Post</Text>
-
         <FormField label="Title" value={title} onChange={setTitle} />
         <FormField label="Content" value={content} onChange={setContent} multiline />
-
         <TouchableOpacity
           style={[styles.button, loading && { opacity: 0.7 }]}
           onPress={handleSubmit}
           disabled={loading}
+          accessibilityLabel="Submit new post"
         >
           {loading ? (
             <ActivityIndicator color="#fff" />
@@ -93,6 +89,10 @@ const FormField = ({
       keyboardType={keyboardType}
       placeholder={label}
       placeholderTextColor="#999"
+      editable={!false}
+      returnKeyType={multiline ? "default" : "done"}
+      blurOnSubmit={!multiline}
+      accessibilityLabel={label}
     />
   </View>
 );

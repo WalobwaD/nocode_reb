@@ -17,6 +17,7 @@ import { fetchComments } from "../../services/commentService";
 import { buildCommentTree } from "../../utils/commentTree";
 import CommentForm from "../CommentForm";
 import CommentItem from "./CommentItem";
+import { Ionicons } from "@expo/vector-icons";
 
 const extractImageUrlFromHtml = (html: string): string | null => {
   const match = html?.match(/<img[^>]+src="([^">]+)"/);
@@ -80,6 +81,15 @@ const CommentsScreen = () => {
 
   return (
     <SafeAreaView style={styles.container}>
+      <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between", width: "100%", marginBottom: 4 }}>
+        <TouchableOpacity
+          style={{ padding: 8, borderRadius: 20, backgroundColor: "transparent", justifyContent: "center", alignItems: "center" }}
+          onPress={() => router.back()}
+          accessibilityLabel="Back"
+        >
+          <Ionicons name="arrow-back" size={24} color="#6200BB" />
+        </TouchableOpacity>
+      </View>
       <View style={styles.postCard}>
         <View style={styles.voteSection}>
           <TouchableOpacity accessibilityLabel="Upvote post">

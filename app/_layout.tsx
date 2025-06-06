@@ -14,8 +14,7 @@ import { useEffect } from "react";
 
 export default function RootLayout() {
   useEffect(() => {
-    const token = login("codersupreme", ",0@J5vPP]1SD");
-    console.log(token);
+    login("codersupreme", ",0@J5vPP]1SD");
   }, []);
 
   const colorScheme = useColorScheme();
@@ -24,7 +23,6 @@ export default function RootLayout() {
   });
 
   if (!loaded) {
-    // Async font loading only occurs in development.
     return null;
   }
 

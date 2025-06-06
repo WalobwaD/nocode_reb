@@ -36,7 +36,7 @@ const CommunityPostCard = ({ item, onDelete }: Props) => {
         user: item.user_details.user_handle,
         content: item.content,
         avatar: item.user_details.avatar,
-        created_at: item.created_at
+        created_at: item.created_at,
       },
     });
   };
@@ -50,12 +50,9 @@ const CommunityPostCard = ({ item, onDelete }: Props) => {
         onPress: async () => {
           const status = await deletePost(item.id);
           if (status === 200 || status === 204) {
-            onDelete?.(item.id);
+            onDelete(item.id);
           } else {
-            Alert.alert(
-              "Failed",
-              "Could not delete the post. Please try again."
-            );
+            Alert.alert("Failed", "Could not delete the post. Please try again.");
           }
         },
       },
@@ -64,7 +61,6 @@ const CommunityPostCard = ({ item, onDelete }: Props) => {
 
   return (
     <View style={styles.postCard}>
-      {/* Header */}
       <View style={styles.header}>
         <Image
           source={{
@@ -84,33 +80,26 @@ const CommunityPostCard = ({ item, onDelete }: Props) => {
           </Text>
         </View>
       </View>
-
-      {/* Content */}
       <View style={styles.content}>
         <Text style={styles.postTitle}>{item.title}</Text>
         <Text style={styles.postContent}>
           {item.content.replace(/<[^>]+>/g, "")}
         </Text>
       </View>
-
-      {/* Score */}
       <View style={styles.scoreRow}>
         <Entypo name="arrow-up" size={20} color="#6200BB" />
         <Text style={styles.scoreText}>{item.score || 0}</Text>
         <Entypo name="arrow-down" size={20} color="#a9a9a9" />
       </View>
-
-      {/* Actions */}
       <View style={styles.actions}>
-        <TouchableOpacity onPress={handleCommentPress} style={styles.iconBtn}>
+        <TouchableOpacity onPress={handleCommentPress} style={styles.iconBtn} accessibilityLabel="View comments">
           <FontAwesome name="comment-o" size={18} color="#6200BB" />
           <Text style={styles.iconText}>
             {item.comments_count} Comment{item.comments_count === 1 ? "" : "s"}
           </Text>
         </TouchableOpacity>
-
         {item.user_details.user_handle === "codersupreme" && (
-          <TouchableOpacity onPress={handleDelete} style={styles.iconBtn}>
+          <TouchableOpacity onPress={handleDelete} style={styles.iconBtn} accessibilityLabel="Delete post">
             <MaterialIcons name="delete-outline" size={18} color="#ff4d4f" />
             <Text style={styles.iconText}>Delete</Text>
           </TouchableOpacity>

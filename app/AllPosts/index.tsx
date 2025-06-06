@@ -12,68 +12,96 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
+import { Ionicons } from "@expo/vector-icons";
 
 const PER_PAGE = 10;
 
-const Communities = () => {
+const AllPosts = () => {
   const [communities, setCommunities] = useState<Post[]>([]);
   const [page, setPage] = useState(1);
   const [loading, setLoading] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
   const [hasMore, setHasMore] = useState(true);
 
-  const loadPosts = async (pageToLoad = 1, refreshing = false) => {
-    if (loading) return;
-
-    setLoading(true);
-    try {
-      const newPosts = await fetchPosts(pageToLoad, PER_PAGE);
-      if (refreshing) {
-        setCommunities(newPosts);
-      } else {
-        setCommunities((prev) => [...prev, ...newPosts]);
+  const loadPosts = useCallback(
+    async (pageToLoad = 1, isRefreshing = false) => {
+      if (loading) return;
+      setLoading(true);
+      try {
+        const newPosts = await fetchPosts(pageToLoad, PER_PAGE);
+        if (isRefreshing) {
+          setCommunities(newPosts);
+        } else {
+          setCommunities((prev) => [...prev, ...newPosts]);
+        }
+        setHasMore(newPosts.length === PER_PAGE);
+        setPage(pageToLoad);
+      } catch {
+        setCommunities([]);
+      } finally {
+        setLoading(false);
+        if (isRefreshing) setRefreshing(false);
       }
-
-      setHasMore(newPosts.length === PER_PAGE);
-      setPage(pageToLoad);
-    } catch (e) {
-      console.error("Failed to load posts:", e);
-    } finally {
-      setLoading(false);
-      if (refreshing) setRefreshing(false);
-    }
-  };
+    },
+    [loading]
+  );
 
   useFocusEffect(
     useCallback(() => {
       loadPosts(1, true);
-    }, [])
+    }, [loadPosts])
   );
 
-  const handleRemoveFromList = (id: string) => {
-    setCommunities((prev) => prev.filter((p) => p.id !== id));
-  };
+  const handleRemoveFromList = useCallback(
+    (id: string) => {
+      setCommunities((prev) => prev.filter((p) => p.id !== id));
+    },
+    []
+  );
 
-  const handleLoadMore = () => {
+  const handleLoadMore = useCallback(() => {
     if (hasMore && !loading) {
       loadPosts(page + 1);
     }
-  };
+  }, [hasMore, loading, loadPosts, page]);
 
-  const handleRefresh = () => {
+  const handleRefresh = useCallback(() => {
     setRefreshing(true);
     loadPosts(1, true);
-  };
+  }, [loadPosts]);
 
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.headerContainer}>
-        <TouchableOpacity
-          style={styles.createPostButton}
-          onPress={() => router.push("/CreatePost")}
+        <View
+          style={{
+            flexDirection: "row",
+            alignItems: "center",
+            justifyContent: "space-between",
+            width: "100%",
+          }}
         >
-          <Text style={styles.createPostText}>+ Create Post</Text>
-        </TouchableOpacity>
+          <TouchableOpacity
+            style={{
+              padding: 8,
+              borderRadius: 20,
+              backgroundColor: "transparent",
+              justifyContent: "center",
+              alignItems: "center",
+            }}
+            onPress={() => router.back()}
+            accessibilityLabel="Back"
+          >
+            <Ionicons name="arrow-back" size={24} color="#6200BB" />
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={styles.createPostButton}
+            onPress={() => router.push("/CreatePost")}
+            accessibilityLabel="Create a new post"
+          >
+            <Text style={styles.createPostText}>+ Create Post</Text>
+          </TouchableOpacity>
+        </View>
       </View>
 
       <FlatList
@@ -94,12 +122,21 @@ const Communities = () => {
             </View>
           ) : null
         }
+        ListEmptyComponent={
+          !loading && (
+            <Text
+              style={{ textAlign: "center", marginTop: 24, color: "#888" }}
+            >
+              No posts found.
+            </Text>
+          )
+        }
       />
     </SafeAreaView>
   );
 };
 
-export default Communities;
+export default AllPosts;
 
 const styles = StyleSheet.create({
   container: {

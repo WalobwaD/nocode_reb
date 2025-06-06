@@ -2,6 +2,7 @@ import { Comment } from "@/types/Comments";
 import { FontAwesome, Ionicons } from "@expo/vector-icons";
 import { router } from "expo-router";
 import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+
 type Original = {
   postId: string;
   title: string;
@@ -9,6 +10,7 @@ type Original = {
   content: string;
   avatar: string;
 };
+
 const OriginalPost = ({
   originalPost,
   retrievedComment,
@@ -16,39 +18,35 @@ const OriginalPost = ({
   originalPost: Original;
   retrievedComment: Comment;
 }) => {
+  const avatarUri =
+    originalPost.avatar && Array.isArray(originalPost.avatar) && originalPost.avatar[0]
+      ? originalPost.avatar[0]
+      : typeof originalPost.avatar === "string" && originalPost.avatar
+      ? originalPost.avatar
+      : "https://picsum.photos/seed/picsum/200/300";
+
   return (
     <View>
       <View style={styles.postCard}>
         <View style={styles.voteSection}>
-          <TouchableOpacity>
+          <TouchableOpacity accessibilityLabel="Upvote post">
             <FontAwesome name="arrow-up" size={20} color="#999" />
           </TouchableOpacity>
-          <TouchableOpacity>
+          <TouchableOpacity accessibilityLabel="Downvote post">
             <FontAwesome name="arrow-down" size={20} color="#999" />
           </TouchableOpacity>
         </View>
-
         <View style={styles.postContent}>
           <View style={styles.headerRow}>
             <Image
-              source={{
-                uri:
-                  originalPost.avatar &&
-                  Array.isArray(originalPost.avatar) &&
-                  originalPost.avatar[0]
-                    ? originalPost.avatar[0]
-                    : typeof originalPost.avatar === "string" &&
-                      originalPost.avatar
-                    ? originalPost.avatar
-                    : "https://picsum.photos/seed/picsum/200/300",
-              }}
+              source={{ uri: avatarUri }}
               style={styles.avatar}
+              accessibilityLabel="User avatar"
             />
             <View>
               <Text style={styles.username}>u/{originalPost.user}</Text>
             </View>
           </View>
-
           <Text style={styles.title}>{originalPost.title}</Text>
           <Text style={styles.bodyText}>
             {(originalPost.content as string)?.replace(/<[^>]+>/g, "")}
@@ -59,19 +57,16 @@ const OriginalPost = ({
         <TouchableOpacity
           style={styles.backButton}
           onPress={() => router.back()}
+          accessibilityLabel="Back"
         >
           <Ionicons name="arrow-back" size={16} color="#6200BB" />
           <Text style={styles.backText}>Back</Text>
         </TouchableOpacity>
-        <View
-          style={{
-            display: "flex",
-            flexDirection: "row",
-          }}
-        >
+        <View style={{ flexDirection: "row" }}>
           <Image
             source={{ uri: retrievedComment.user_details.avatar }}
             style={styles.avatar}
+            accessibilityLabel="Comment user avatar"
           />
           <View style={styles.textContainer}>
             <Text style={styles.displayName}>

@@ -1,5 +1,5 @@
 import { createComment } from "@/services/commentService";
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import {
   ActivityIndicator,
   Alert,
@@ -20,19 +20,15 @@ const CommentForm = ({ postId, onCommentAdded }: Props) => {
   const [comment, setComment] = useState("");
   const [loading, setLoading] = useState(false);
 
-  const handleComment = async () => {
-    if (!comment.trim()) {
+  const handleComment = useCallback(async () => {
+    if (!comment.trim() || loading) {
       Alert.alert("Comment cannot be empty.");
       return;
     }
-
     setLoading(true);
     try {
       const normalizedPostId = Array.isArray(postId) ? postId[0] : postId;
-
       const response = await createComment(normalizedPostId, comment.trim());
-      console.log("Create comment response:", response);
-
       if (response?.id) {
         Alert.alert("Comment added!");
         setComment("");
@@ -41,12 +37,11 @@ const CommentForm = ({ postId, onCommentAdded }: Props) => {
         Alert.alert("Failed to add comment.");
       }
     } catch (error) {
-      console.error("Error creating comment:", error);
       Alert.alert("Something went wrong.");
     } finally {
       setLoading(false);
     }
-  };
+  }, [comment, loading, postId, onCommentAdded]);
 
   return (
     <SafeAreaView>
@@ -59,6 +54,9 @@ const CommentForm = ({ postId, onCommentAdded }: Props) => {
             onChangeText={setComment}
             multiline
             editable={!loading}
+            returnKeyType="send"
+            onSubmitEditing={handleComment}
+            blurOnSubmit={true}
           />
           <TouchableOpacity
             style={styles.sendButton}
