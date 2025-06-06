@@ -11,9 +11,7 @@ Nocode Chat Zone is a modern, community-driven discussion platform designed for 
 - **Post Creation**: Share posts with text and media, and engage with others through comments and replies.
 - **Collapsible Threads**: Collapse or expand comment threads for better readability.
 - **Modern UI/UX**: Responsive, accessible, and visually appealing interface.
-- **Authentication**: Secure sign-in and user management.
 - **Haptic Feedback**: Enhanced user interaction with tactile feedback.
-- **Custom Theming**: Light and dark mode support.
 
 ---
 
