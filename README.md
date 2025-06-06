@@ -21,9 +21,9 @@ Nocode Chat Zone is a modern, community-driven discussion platform designed for 
 
 <!-- Add screenshots of the main screens here -->
 
-| Home Feed | Post Details | Nested Comments |
-|-----------|--------------|-----------------|
-| ![Home](assets/images/WhatsApp%20Image%202025-06-06%20at%2019.16.17.jpeg) | ![Posts](assets/images/WhatsApp%20Image%202025-06-06%20at%2019.16.18.jpeg) | ![Comments](assets/images/WhatsApp%20Image%202025-06-06%20at%2019.16.19.jpeg) | ![Comments](assets/images/WhatsApp%20Image%202025-06-06%20at%2019.16.20%20(1).jpeg) | ![Comments](assets/images/WhatsApp%20Image%202025-06-06%20at%2019.16.20.jpeg)
+| Home Feed                                                                 | Post Details                                                               | Nested Comments                                                               |
+| ------------------------------------------------------------------------- | -------------------------------------------------------------------------- | ----------------------------------------------------------------------------- | ------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------- |
+| ![Home](assets/images/WhatsApp%20Image%202025-06-06%20at%2019.16.17.jpeg) | ![Posts](assets/images/WhatsApp%20Image%202025-06-06%20at%2019.16.18.jpeg) | ![Comments](assets/images/WhatsApp%20Image%202025-06-06%20at%2019.16.19.jpeg) | ![Comments](<assets/images/WhatsApp%20Image%202025-06-06%20at%2019.16.20%20(1).jpeg>) | ![Comments](assets/images/WhatsApp%20Image%202025-06-06%20at%2019.16.20.jpeg) |
 
 ---
 
@@ -31,13 +31,14 @@ Nocode Chat Zone is a modern, community-driven discussion platform designed for 
 
 <!-- Add a demo video link or embed here -->
 
-[![Watch the demo](assets/images/screenshot-home.png)](https://your-demo-video-link.com)
+<a href="https://www.dropbox.com/scl/fi/qw0se6z4owbsolkmlkim5/WhatsApp-Video-2025-06-06-at-19.11.50.mp4?rlkey=9p89ixe5fuzy728oz48uj91zn&st=4xzkjj5s&dl=0">Demo link</a>
 
 ---
 
 ## Getting Started
 
 ### Prerequisites
+
 - [Node.js](https://nodejs.org/)
 - [Yarn](https://yarnpkg.com/) or [npm](https://www.npmjs.com/)
 - [Expo CLI](https://docs.expo.dev/get-started/installation/)
@@ -56,6 +57,7 @@ Nocode Chat Zone is a modern, community-driven discussion platform designed for 
    npm install
    ```
 3. **Start the development server:**
+
    ```sh
    expo start
    ```
@@ -128,4 +130,3 @@ This project is licensed under the MIT License.
 ## Contact
 
 For questions or support, please open an issue or contact the maintainer.
-
