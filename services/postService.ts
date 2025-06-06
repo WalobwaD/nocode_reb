@@ -24,6 +24,7 @@ export const fetchPosts = async (
   const res = await api.get(
     `/api:Coq7oZJp:staging/posts?page=${page}&per_page=${perPage}&sort=${sort}`
   );
+  console.log(page, perPage, sort);
 
   return res.data.items;
 };

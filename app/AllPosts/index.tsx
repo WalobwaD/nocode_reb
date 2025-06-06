@@ -16,7 +16,7 @@ import { Ionicons } from "@expo/vector-icons";
 
 const PER_PAGE = 10;
 
-const AllPosts = () => {
+const Communities = () => {
   const [communities, setCommunities] = useState<Post[]>([]);
   const [page, setPage] = useState(1);
   const [loading, setLoading] = useState(false);
@@ -36,8 +36,8 @@ const AllPosts = () => {
         }
         setHasMore(newPosts.length === PER_PAGE);
         setPage(pageToLoad);
-      } catch {
-        setCommunities([]);
+      } catch (e) {
+        console.error("Failed to load posts:", e);
       } finally {
         setLoading(false);
         if (isRefreshing) setRefreshing(false);
@@ -49,59 +49,49 @@ const AllPosts = () => {
   useFocusEffect(
     useCallback(() => {
       loadPosts(1, true);
-    }, [loadPosts])
+    }, [])
   );
 
-  const handleRemoveFromList = useCallback(
-    (id: string) => {
-      setCommunities((prev) => prev.filter((p) => p.id !== id));
-    },
-    []
-  );
+  const handleRemoveFromList = useCallback((id: string) => {
+    setCommunities((prev) => prev.filter((p) => p.id !== id));
+  }, []);
 
   const handleLoadMore = useCallback(() => {
     if (hasMore && !loading) {
-      loadPosts(page + 1);
+      // Use functional update to always get the latest page value
+      setPage((prevPage) => {
+        const nextPage = prevPage + 1;
+        loadPosts(nextPage);
+        return nextPage;
+      });
     }
-  }, [hasMore, loading, loadPosts, page]);
+  }, [hasMore, loading, loadPosts]);
 
   const handleRefresh = useCallback(() => {
     setRefreshing(true);
     loadPosts(1, true);
+    setPage(1);
   }, [loadPosts]);
 
   return (
-    <SafeAreaView style={styles.container}>
-      <View style={styles.headerContainer}>
-        <View
+    <SafeAreaView style={{ flex: 1 }}>
+      <View style={{flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', padding: 16}}>
+        <TouchableOpacity
           style={{
-            flexDirection: "row",
+            padding: 8,
+            borderRadius: 20,
+            backgroundColor: "transparent",
+            justifyContent: "center",
             alignItems: "center",
-            justifyContent: "space-between",
-            width: "100%",
           }}
+          onPress={() => router.back()}
+          accessibilityLabel="Back"
         >
-          <TouchableOpacity
-            style={{
-              padding: 8,
-              borderRadius: 20,
-              backgroundColor: "transparent",
-              justifyContent: "center",
-              alignItems: "center",
-            }}
-            onPress={() => router.back()}
-            accessibilityLabel="Back"
-          >
-            <Ionicons name="arrow-back" size={24} color="#6200BB" />
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={styles.createPostButton}
-            onPress={() => router.push("/CreatePost")}
-            accessibilityLabel="Create a new post"
-          >
-            <Text style={styles.createPostText}>+ Create Post</Text>
-          </TouchableOpacity>
-        </View>
+          <Ionicons name="arrow-back" size={24} color="#6200BB" />
+        </TouchableOpacity>
+        <TouchableOpacity onPress={() => router.push("/CreatePost")}>
+          <Text style={styles.createPost}>+ Create Post</Text>
+        </TouchableOpacity>
       </View>
 
       <FlatList
@@ -114,71 +104,25 @@ const AllPosts = () => {
         onEndReachedThreshold={0.5}
         refreshing={refreshing}
         onRefresh={handleRefresh}
-        contentContainerStyle={styles.listContent}
         ListFooterComponent={
           loading ? (
-            <View style={styles.loadingContainer}>
+            <View style={{ padding: 16 }}>
               <ActivityIndicator size="small" color="#6200BB" />
             </View>
           ) : null
-        }
-        ListEmptyComponent={
-          !loading && (
-            <Text
-              style={{ textAlign: "center", marginTop: 24, color: "#888" }}
-            >
-              No posts found.
-            </Text>
-          )
         }
       />
     </SafeAreaView>
   );
 };
 
-export default AllPosts;
+export default Communities;
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#F9F9FB",
-  },
-  headerContainer: {
-    paddingHorizontal: 16,
-    paddingTop: 10,
-    paddingBottom: 5,
-    alignItems: "center",
-    backgroundColor: "#fff",
-    borderBottomColor: "#e0e0e0",
-    borderBottomWidth: 1,
-    shadowColor: "#000",
-    shadowOpacity: 0.03,
-    shadowRadius: 2,
-    shadowOffset: { width: 0, height: 1 },
-    elevation: 2,
-  },
-  createPostButton: {
-    backgroundColor: "#6200BB",
-    paddingVertical: 12,
-    paddingHorizontal: 24,
-    borderRadius: 30,
-    shadowColor: "#6200BB",
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.3,
-    shadowRadius: 6,
-    elevation: 4,
-  },
-  createPostText: {
-    color: "#fff",
+  createPost: {
     fontSize: 16,
     fontWeight: "600",
-  },
-  listContent: {
-    padding: 12,
-    paddingBottom: 40,
-  },
-  loadingContainer: {
-    padding: 16,
-    alignItems: "center",
+    padding: 15,
+    color: "#6200BB",
   },
 });

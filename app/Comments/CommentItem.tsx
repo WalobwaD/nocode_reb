@@ -46,7 +46,9 @@ const CommentItem: React.FC<Props> = ({
 
   // Memoize avatar URI for performance
   const avatarUri = React.useMemo(() => {
-    return comment.user_details.avatar || "https://picsum.photos/seed/picsum/200/300";
+    return (
+      comment.user_details.avatar || "https://picsum.photos/seed/picsum/200/300"
+    );
   }, [comment.user_details.avatar]);
 
   // Memoize formatted time
@@ -74,8 +76,10 @@ const CommentItem: React.FC<Props> = ({
       if (response?.id) {
         Alert.alert("Comment added!");
         setReplyText("");
+        setShowReplies(true); // Ensure thread stays open
+        // Do not close the reply input after reply
         onReplyAdded?.();
-        setIsReplying(false);
+        // setIsReplying(false); // REMOVE this line to keep reply box open
       } else {
         Alert.alert("Failed to add comment.");
       }
@@ -145,12 +149,9 @@ const CommentItem: React.FC<Props> = ({
             style={[styles.verticalLine, { marginLeft: (level - 1) * 12 + 10 }]}
           />
         )}
-        <View style={[styles.commentBlock, { marginLeft: level * 12 }]}>  
+        <View style={[styles.commentBlock, { marginLeft: level * 12 }]}>
           <View style={styles.commentContainer}>
-            <Image
-              source={{ uri: avatarUri }}
-              style={styles.avatar}
-            />
+            <Image source={{ uri: avatarUri }} style={styles.avatar} />
             <View style={styles.content}>
               <View style={styles.header}>
                 <Text style={styles.displayName}>
@@ -173,7 +174,7 @@ const CommentItem: React.FC<Props> = ({
                   >
                     <Text style={styles.reply}>Reply</Text>
                   </TouchableOpacity>
-                  {currentUserId === comment.user_details.user_handle && (
+                  {comment.user_details.user_handle === "codersupreme" && (
                     <TouchableOpacity onPress={handleDelete}>
                       <Text style={styles.delete}>Delete</Text>
                     </TouchableOpacity>
@@ -183,9 +184,12 @@ const CommentItem: React.FC<Props> = ({
               {comment.child_count > 0 && (
                 <TouchableOpacity onPress={handleViewReplies}>
                   <Text style={styles.viewReplies}>
-                    {showReplies ? "-" : "+"} {comment.depth_level === 4 || comment.depth_level === 8
+                    {showReplies ? "-" : "+"}{" "}
+                    {comment.depth_level === 4 || comment.depth_level === 8
                       ? "View more comments"
-                      : `View ${comment.child_count} repl${comment.child_count > 1 ? "ies" : "y"}`}
+                      : `View ${comment.child_count} repl${
+                          comment.child_count > 1 ? "ies" : "y"
+                        }`}
                   </Text>
                 </TouchableOpacity>
               )}
@@ -225,7 +229,11 @@ const CommentItem: React.FC<Props> = ({
             onSubmitEditing={handleReply}
             blurOnSubmit={true}
           />
-          <TouchableOpacity onPress={handleReply} style={{ paddingLeft: 8 }} disabled={loading}>
+          <TouchableOpacity
+            onPress={handleReply}
+            style={{ paddingLeft: 8 }}
+            disabled={loading}
+          >
             {loading ? (
               <ActivityIndicator size="small" color="#6200BB" />
             ) : (

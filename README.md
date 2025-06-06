@@ -23,7 +23,7 @@ Nocode Chat Zone is a modern, community-driven discussion platform designed for 
 
 | Home Feed | Post Details | Nested Comments |
 |-----------|--------------|-----------------|
-| ![Home](assets/images/screenshot-home.png) | ![Post](assets/images/screenshot-post.png) | ![Comments](assets/images/screenshot-comments.png) |
+| ![Home](assets/images/WhatsApp%20Image%202025-06-06%20at%2019.16.17.jpeg) | ![Posts](assets/images/WhatsApp%20Image%202025-06-06%20at%2019.16.18.jpeg) | ![Comments](assets/images/WhatsApp%20Image%202025-06-06%20at%2019.16.19.jpeg) | ![Comments](assets/images/WhatsApp%20Image%202025-06-06%20at%2019.16.20%20(1).jpeg) | ![Comments](assets/images/WhatsApp%20Image%202025-06-06%20at%2019.16.20.jpeg)
 
 ---
 

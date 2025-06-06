@@ -45,7 +45,7 @@ const Communities = () => {
         if (isRefreshing) setRefreshing(false);
       }
     },
-    [loading]
+    []
   );
 
   useFocusEffect(
@@ -54,56 +54,52 @@ const Communities = () => {
     }, [loadCommunities])
   );
 
-  const handleRemoveFromList = useCallback(
-    (id: string) => {
-      setCommunities((prev) => prev.filter((p) => p.id !== id));
-    },
-    []
-  );
+  const handleRemoveFromList = useCallback((id: string) => {
+    setCommunities((prev) => prev.filter((p) => p.id !== id));
+  }, []);
 
   const handleLoadMore = useCallback(() => {
     if (hasMore && !loading) {
-      loadCommunities(page + 1);
+      setPage((prevPage) => {
+        const nextPage = prevPage + 1;
+        loadCommunities(nextPage);
+        return nextPage;
+      });
     }
-  }, [hasMore, loading, loadCommunities, page]);
+  }, [hasMore, loading, loadCommunities]);
 
   const handleRefresh = useCallback(() => {
     setRefreshing(true);
     loadCommunities(1, true);
+    setPage(1);
   }, [loadCommunities]);
 
   return (
     <SafeAreaView style={styles.container}>
-      <View style={styles.headerContainer}>
-        <View
+      <View
+        style={{
+          flexDirection: "row",
+          justifyContent: "space-between",
+          alignItems: "center",
+          padding: 16,
+        }}
+      >
+        <TouchableOpacity
           style={{
-            flexDirection: "row",
+            padding: 8,
+            borderRadius: 20,
+            backgroundColor: "transparent",
+            justifyContent: "center",
             alignItems: "center",
-            justifyContent: "space-between",
-            width: "100%",
           }}
+          onPress={() => router.back()}
+          accessibilityLabel="Back"
         >
-          <TouchableOpacity
-            style={{
-              padding: 8,
-              borderRadius: 20,
-              backgroundColor: "transparent",
-              justifyContent: "center",
-              alignItems: "center",
-            }}
-            onPress={() => router.back()}
-            accessibilityLabel="Back"
-          >
-            <Ionicons name="arrow-back" size={24} color="#6200BB" />
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={styles.createPostButton}
-            onPress={() => router.push("/CreatePost")}
-            accessibilityLabel="Create a new post"
-          >
-            <Text style={styles.createPostText}>+ Create Post</Text>
-          </TouchableOpacity>
-        </View>
+          <Ionicons name="arrow-back" size={24} color="#6200BB" />
+        </TouchableOpacity>
+        <TouchableOpacity onPress={() => router.push("/CreatePost")}>
+          <Text style={styles.createPost}>+ Create Post</Text>
+        </TouchableOpacity>
       </View>
       <FlatList
         data={communities}
@@ -162,16 +158,11 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 2 },
     elevation: 2,
   },
-  createPostButton: {
-    backgroundColor: "#6200BB",
-    paddingVertical: 12,
-    paddingHorizontal: 24,
-    borderRadius: 25,
-    shadowColor: "#6200BB",
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.25,
-    shadowRadius: 6,
-    elevation: 4,
+  createPost: {
+    fontSize: 16,
+    fontWeight: "600",
+    padding: 15,
+    color: "#6200BB",
   },
   createPostText: {
     color: "#fff",
