@@ -21,14 +21,11 @@ Nocode Chat Zone is a modern, community-driven discussion platform designed for 
 
 <!-- Add screenshots of the main screens here -->
 
-<img src="./assets//images/WhatsApp%20Image%202025-06-06%20at%2019.16.17.jpeg"/>
-<img src="./assets/images/WhatsApp%20Image%202025-06-06%20at%2019.16.18.jpeg"/>
-<img src="./assets/images/WhatsApp%20Image%202025-06-06%20at%2019.16.19.jpeg"/>
-<img src="./assets/images/WhatsApp%20Image%202025-06-06%20at%2019.16.20%20(1).jpeg"/>
-<img src="./assets/images/WhatsApp%20Image%202025-06-06%20at%2019.16.20.jpeg"/>
-
-
-
+<img src="./assets/images/WhatsApp%20Image%202025-06-06%20at%2019.16.17.jpeg" width="350" style="margin-bottom: 10px;"/>
+<img src="./assets/images/WhatsApp%20Image%202025-06-06%20at%2019.16.18.jpeg" width="350" style="margin-bottom: 10px;"/>
+<img src="./assets/images/WhatsApp%20Image%202025-06-06%20at%2019.16.19.jpeg" width="350" style="margin-bottom: 10px;"/>
+<img src="./assets/images/WhatsApp%20Image%202025-06-06%20at%2019.16.20%20(1).jpeg" width="350" style="margin-bottom: 10px;"/>
+<img src="./assets/images/WhatsApp%20Image%202025-06-06%20at%2019.16.20.jpeg" width="350" style="margin-bottom: 10px;"/>
 
 ---
 
@@ -99,9 +96,6 @@ assets/                   # Images and fonts
 - `services/` — API and business logic (auth, posts, comments, communities)
 - `utils/` — Utility functions (comment tree, formatting)
 - `types/` — TypeScript types for core entities
-
----
-
 
 ---
 
