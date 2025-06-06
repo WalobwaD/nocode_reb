@@ -21,9 +21,14 @@ Nocode Chat Zone is a modern, community-driven discussion platform designed for 
 
 <!-- Add screenshots of the main screens here -->
 
-| Home Feed                                                                 | Post Details                                                               | Nested Comments                                                               |
-| ------------------------------------------------------------------------- | -------------------------------------------------------------------------- | ----------------------------------------------------------------------------- | ------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------- |
-| ![Home](assets/images/WhatsApp%20Image%202025-06-06%20at%2019.16.17.jpeg) | ![Posts](assets/images/WhatsApp%20Image%202025-06-06%20at%2019.16.18.jpeg) | ![Comments](assets/images/WhatsApp%20Image%202025-06-06%20at%2019.16.19.jpeg) | ![Comments](<assets/images/WhatsApp%20Image%202025-06-06%20at%2019.16.20%20(1).jpeg>) | ![Comments](assets/images/WhatsApp%20Image%202025-06-06%20at%2019.16.20.jpeg) |
+<img src="./assets//images/WhatsApp%20Image%202025-06-06%20at%2019.16.17.jpeg"/>
+<img src="./assets/images/WhatsApp%20Image%202025-06-06%20at%2019.16.18.jpeg"/>
+<img src="./assets/images/WhatsApp%20Image%202025-06-06%20at%2019.16.19.jpeg"/>
+<img src="./assets/images/WhatsApp%20Image%202025-06-06%20at%2019.16.20%20(1).jpeg"/>
+<img src="./assets/images/WhatsApp%20Image%202025-06-06%20at%2019.16.20.jpeg"/>
+
+
+
 
 ---
 
@@ -40,7 +45,7 @@ Nocode Chat Zone is a modern, community-driven discussion platform designed for 
 ### Prerequisites
 
 - [Node.js](https://nodejs.org/)
-- [Yarn](https://yarnpkg.com/) or [npm](https://www.npmjs.com/)
+- [npm](https://www.npmjs.com/)
 - [Expo CLI](https://docs.expo.dev/get-started/installation/)
 
 ### Installation
@@ -52,14 +57,12 @@ Nocode Chat Zone is a modern, community-driven discussion platform designed for 
    ```
 2. **Install dependencies:**
    ```sh
-   yarn install
-   # or
    npm install
    ```
 3. **Start the development server:**
 
    ```sh
-   expo start
+   npm start
    ```
 
 4. **Run on your device:**
@@ -99,17 +102,6 @@ assets/                   # Images and fonts
 
 ---
 
-## Customization
-
-- **Theming:** Edit `constants/Colors.ts` and use hooks in `hooks/` for custom color schemes.
-- **Fonts & Images:** Add assets to `assets/fonts/` and `assets/images/`.
-- **API Endpoints:** Update `config/api.ts` to point to your backend.
-
----
-
-## Contributing
-
-Contributions are welcome! Please open issues and pull requests for bug fixes, features, or improvements.
 
 ---
 
@@ -125,8 +117,3 @@ This project is licensed under the MIT License.
 - [Expo](https://expo.dev/)
 - [TypeScript](https://www.typescriptlang.org/)
 
----
-
-## Contact
-
-For questions or support, please open an issue or contact the maintainer.
