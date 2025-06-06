@@ -1,50 +1,131 @@
-# Welcome to your Expo app 👋
+# Nocode Chat Zone
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+Nocode Chat Zone is a modern, community-driven discussion platform designed for seamless threaded conversations, collaborative knowledge sharing, and vibrant online communities. Built with React Native and Expo, it features deeply nested comments, real-time updates, and a clean, mobile-first user experience.
 
-## Get started
+---
 
-1. Install dependencies
+## Features
 
-   ```bash
+- **Community Boards**: Create and join multiple communities to discuss topics of interest.
+- **Threaded Comments**: Support for deeply nested replies, making it easy to follow complex discussions.
+- **Post Creation**: Share posts with text and media, and engage with others through comments and replies.
+- **Collapsible Threads**: Collapse or expand comment threads for better readability.
+- **Modern UI/UX**: Responsive, accessible, and visually appealing interface.
+- **Authentication**: Secure sign-in and user management.
+- **Haptic Feedback**: Enhanced user interaction with tactile feedback.
+- **Custom Theming**: Light and dark mode support.
+
+---
+
+## Screenshots
+
+<!-- Add screenshots of the main screens here -->
+
+| Home Feed | Post Details | Nested Comments |
+|-----------|--------------|-----------------|
+| ![Home](assets/images/screenshot-home.png) | ![Post](assets/images/screenshot-post.png) | ![Comments](assets/images/screenshot-comments.png) |
+
+---
+
+## Demo Video
+
+<!-- Add a demo video link or embed here -->
+
+[![Watch the demo](assets/images/screenshot-home.png)](https://your-demo-video-link.com)
+
+---
+
+## Getting Started
+
+### Prerequisites
+- [Node.js](https://nodejs.org/)
+- [Yarn](https://yarnpkg.com/) or [npm](https://www.npmjs.com/)
+- [Expo CLI](https://docs.expo.dev/get-started/installation/)
+
+### Installation
+
+1. **Clone the repository:**
+   ```sh
+   git clone https://github.com/yourusername/nocode-chat-zone.git
+   cd nocode-chat-zone
+   ```
+2. **Install dependencies:**
+   ```sh
+   yarn install
+   # or
    npm install
    ```
-
-2. Start the app
-
-   ```bash
-   npx expo start
+3. **Start the development server:**
+   ```sh
+   expo start
    ```
 
-In the output, you'll find options to open the app in a
+4. **Run on your device:**
+   - Use the Expo Go app (iOS/Android) to scan the QR code.
+   - Or run on an emulator/simulator.
 
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
+---
 
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
+## Project Structure
 
-## Get a fresh project
-
-When you're ready, run:
-
-```bash
-npm run reset-project
+```
+app/
+  ├── AllPosts/           # All posts feed
+  ├── CommentForm/        # Comment creation UI
+  ├── Comments/           # Comment list and item components
+  ├── Communities/        # Community boards
+  ├── CreatePost/         # Post creation UI
+  ├── Replies/            # Nested replies components
+components/               # Shared UI components
+config/                   # API and environment config
+constants/                # App-wide constants
+hooks/                    # Custom React hooks
+services/                 # API and business logic
+scripts/                  # Utility scripts
+assets/                   # Images and fonts
 ```
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+---
 
-## Learn more
+## Key Files
 
-To learn more about developing your project with Expo, look at the following resources:
+- `app/` — Main app screens and navigation
+- `components/` — Reusable UI components
+- `services/` — API and business logic (auth, posts, comments, communities)
+- `utils/` — Utility functions (comment tree, formatting)
+- `types/` — TypeScript types for core entities
 
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
+---
 
-## Join the community
+## Customization
 
-Join our community of developers creating universal apps.
+- **Theming:** Edit `constants/Colors.ts` and use hooks in `hooks/` for custom color schemes.
+- **Fonts & Images:** Add assets to `assets/fonts/` and `assets/images/`.
+- **API Endpoints:** Update `config/api.ts` to point to your backend.
 
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+---
+
+## Contributing
+
+Contributions are welcome! Please open issues and pull requests for bug fixes, features, or improvements.
+
+---
+
+## License
+
+This project is licensed under the MIT License.
+
+---
+
+## Acknowledgements
+
+- [React Native](https://reactnative.dev/)
+- [Expo](https://expo.dev/)
+- [TypeScript](https://www.typescriptlang.org/)
+
+---
+
+## Contact
+
+For questions or support, please open an issue or contact the maintainer.
+
