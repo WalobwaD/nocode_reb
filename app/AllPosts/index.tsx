@@ -16,7 +16,7 @@ import { Ionicons } from "@expo/vector-icons";
 
 const PER_PAGE = 10;
 
-const Communities = () => {
+const AllPosts = () => {
   const [communities, setCommunities] = useState<Post[]>([]);
   const [page, setPage] = useState(1);
   const [loading, setLoading] = useState(false);
@@ -116,7 +116,7 @@ const Communities = () => {
   );
 };
 
-export default Communities;
+export default AllPosts;
 
 const styles = StyleSheet.create({
   createPost: {
